@@ -1,0 +1,14 @@
+node_modules/
+# split client into another repo
+client/
+
+# Config file
+.env
+
+# Vim's temponary files
+*.~
+*.swp
+*.swo
+
+# Yarn logs
+yarn-error.log

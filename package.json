@@ -1,0 +1,45 @@
+{
+  "name": "blogging",
+  "engines": {
+    "node": "v14"
+  },
+  "scripts": {
+    "dev": "concurrently \"yarn server\" \"yarn client\"",
+    "server": "nodemon server.js --ignore './client/'",
+    "client": "cd client && yarn start"
+  },
+  "version": "1.0.0",
+  "main": "server.js",
+  "license": "MIT",
+  "dependencies": {
+    "@axelspringer/graphql-google-pubsub": "^2.1.0",
+    "apollo-server": "^2.19.2",
+    "apollo-server-express": "^2.22.1",
+    "aws-sdk": "^2.874.0",
+    "bcrypt": "^5.0.0",
+    "bluebird": "^3.7.2",
+    "cloudinary": "^1.25.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.19.0",
+    "folktale": "^2.3.2",
+    "graphql-upload": "^11.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
+    "mongoose": "^5.11.15",
+    "mongoose-paginate-v2": "^1.3.16",
+    "ramda": "^0.27.1",
+    "remark": "^13.0.0",
+    "streamifier": "^0.1.1",
+    "strip-markdown": "^4.0.0",
+    "subscriptions-transport-ws": "^0.9.18",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.7"
+  },
+  "resolutions": {
+    "**/**/fs-capacitor": "^6.2.0",
+    "**/graphql-upload": "^11.0.0"
+  }
+}
