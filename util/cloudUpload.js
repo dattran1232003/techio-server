@@ -5,8 +5,9 @@ const { ApolloError } = require('apollo-server')
 const isType = type => includes(type)
 const isImage = isType('image/')
 
-const uploadPhotoCloud = file => new Promise((resolve, reject) => {
-  file.then(({ createReadStream, filename, mimetype, encoding }) => {
+const uploadPhotoCloud = (file, dir='/in-post') => 
+  new Promise((resolve, reject) => {
+    file.then(({ createReadStream, filename, mimetype, encoding }) => {
       if (isImage(mimetype)) { 
         createReadStream()
           .pipe(cloudinary.uploader.upload_stream(
@@ -14,7 +15,7 @@ const uploadPhotoCloud = file => new Promise((resolve, reject) => {
               use_filename: true,
               unique_filename: true,
               resource_type: 'image',
-              folder: '/techio/images/in-post',
+              folder: `/techio/images${dir}`,
             },
             (err, result) => err 
             ? reject(err) 
@@ -24,6 +25,6 @@ const uploadPhotoCloud = file => new Promise((resolve, reject) => {
         reject(new ApolloError('File must be image', 'BAD_USER_INPUT'))
       }
     })
-})
+  })
 
 module.exports = { uploadPhotoCloud }

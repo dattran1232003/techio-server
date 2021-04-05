@@ -10,6 +10,7 @@ const formatValidateErrors = reduce((accum, current) => {
 
 const {
   isEmailValid,
+  isAvatarValid,
   isUsernameValid,
   isPasswordValid,
 } = require('./validate-rules')
@@ -18,13 +19,15 @@ const validateLoginForm = (data) =>
   Success()
     .concat(isPasswordValid(data.password, data.password))
     .concat(isUsernameValid(data.username))
+    .concat(isAvatarValid(data.avatarURL))
     .map(() => data)
 
 const validateRegisterForm = (data) => 
   Success()
+    .concat(validateLoginForm(data))
     .concat(isEmailValid(data.email))
+    .concat(isAvatarValid(data.avatarURL))
     .concat(isPasswordValid(data.password, data.confirmPassword))
-    .concat(isUsernameValid(data.username))
     .map(() => data)
 
 exports.validateRegisterInput = data =>

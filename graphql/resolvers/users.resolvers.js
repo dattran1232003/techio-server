@@ -25,6 +25,7 @@ module.exports = {
       })
       const { username, email, password } = registerInput
 
+      const hashingPassword = bcrypt.hash(password, 12)
       // Make sure user doesn't already exists
       if (await User.findOne({username})) 
         return new UserInputError('Username is taken.', {
@@ -37,7 +38,7 @@ module.exports = {
       const newUser = new User({
         email,
         username,
-        password: await bcrypt.hash(password, 12),
+        password: await hashingPassword,
         createdAt: new Date().toISOString()
       })
       const res = await newUser.save()

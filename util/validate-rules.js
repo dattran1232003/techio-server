@@ -1,7 +1,8 @@
 const { Success, Failure } = require('folktale/validation')
 const { objOf } = require('ramda')
 
-const createError = (field, message) =>([objOf(field, message)])
+const createError = (fieldName, message) =>([objOf(fieldName, message)])
+const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 const notEmpty = (field, value, message) =>
@@ -17,6 +18,11 @@ const minLength = (field, min, value, message) =>
     : /* otherwise */   Failure(createError(field, message || 
       `${field} must have ${min} characters.`)
     )
+
+const validURL = (field, url, message) => 
+  url.match(urlRegex) ? Success(url)
+    : /* otherwise */   Failure(createError(field, message
+    || `${url} must match with ${field}`))
 
 const equals = (field, value1, value2, message) =>
   value1 === value2 ? Success(value1)
@@ -37,8 +43,16 @@ const isEmailValid = (email) => Success()
   .concat(matches('email', emailRegex, email, 'email không hợp lệ'))
   .map(() => email)
 
+const isAvatarValid = avatarURL => Success()
+  .concat(notEmpty('avatar', avatarURL, 'đường dẫn avatar không được để trống'))
+  .concat(validURL('avatar', avatarURL, 'đường dẫn avatar không hợp lệ'))
+  .map(() => avatarURL)
+
+  
+
 module.exports = {
   isEmailValid,
+  isAvatarValid,
   isUsernameValid,
-  isPasswordValid
+  isPasswordValid,
 }

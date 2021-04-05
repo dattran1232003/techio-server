@@ -64,6 +64,7 @@ module.exports = gql`
     id: ID!
     email: String!
     token: String!
+    avatarURL: String!
     username: String!
     createdAt: String!
     likedPost: [Post!]!
@@ -78,6 +79,7 @@ module.exports = gql`
   }
   type Mutation {
     uploadPhoto(photo: Upload!): File!
+    uploadAvatar(avatar: Upload!): File!
     register(registerInput: RegisterInput): User!
     login(username: String, password: String): User!
     createPost(title: String, body: String!): Post!
