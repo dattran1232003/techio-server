@@ -25,7 +25,8 @@ const userSchema = new Schema({
     trim: true,
     type: String,
     required: true,
-    validate: urlRegex
+    validate: urlRegex,
+    default: process.env.DEFAULT_AVATAR
   },
   likedPost: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],

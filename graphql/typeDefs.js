@@ -12,6 +12,7 @@ module.exports = gql`
     email: String!
     username: String!
     password: String!
+    avatarURL: String
     confirmPassword: String!
   }
 

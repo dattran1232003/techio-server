@@ -23,7 +23,12 @@ module.exports = {
       if (!inputDataOrErrors.value) return new UserInputError('Input Errors', {
         errors: inputDataOrErrors
       })
-      const { username, email, password } = registerInput
+      const { 
+        username, 
+        email, 
+        password, 
+        avatarURL 
+      } = registerInput
 
       const hashingPassword = bcrypt.hash(password, 12)
       // Make sure user doesn't already exists
@@ -38,6 +43,7 @@ module.exports = {
       const newUser = new User({
         email,
         username,
+        avatarURL,
         password: await hashingPassword,
         createdAt: new Date().toISOString()
       })

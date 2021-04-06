@@ -5,8 +5,8 @@ const { ApolloError } = require('apollo-server')
 const isType = type => includes(type)
 const isImage = isType('image/')
 
-const uploadPhotoCloud = (file, dir='/in-post') => 
-  new Promise((resolve, reject) => {
+const uploadPhotoCloud = (file, options = {}) => 
+  new Promise((resolve, reject) => 
     file.then(({ createReadStream, filename, mimetype, encoding }) => {
       if (isImage(mimetype)) { 
         createReadStream()
@@ -15,7 +15,8 @@ const uploadPhotoCloud = (file, dir='/in-post') =>
               use_filename: true,
               unique_filename: true,
               resource_type: 'image',
-              folder: `/techio/images${dir}`,
+              folder: `/techio/images${options.dir || '/in-post'}`,
+              ...options
             },
             (err, result) => err 
             ? reject(err) 
@@ -25,6 +26,15 @@ const uploadPhotoCloud = (file, dir='/in-post') =>
         reject(new ApolloError('File must be image', 'BAD_USER_INPUT'))
       }
     })
+  )
+
+const uploadAvatarCloud = file => 
+  uploadPhotoCloud(file, {
+    dir: '/avatars',
+    transformation: [
+      {width: 400, height: 400, gravity: "face", radius: "max", crop: "crop"},
+      {width: 200, crop: "scale"}
+    ]
   })
 
-module.exports = { uploadPhotoCloud }
+module.exports = { uploadPhotoCloud, uploadAvatarCloud }

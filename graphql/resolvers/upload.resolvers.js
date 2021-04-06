@@ -1,4 +1,4 @@
-const { uploadPhotoCloud } = require('../../util/cloudUpload')
+const { uploadPhotoCloud, uploadAvatarCloud } = require('../../util/cloudUpload')
 
 module.exports = { 
   Query: {
@@ -15,7 +15,7 @@ module.exports = {
     }, // end of uploadPhoto
     async uploadAvatar(_, { avatar }) {
       try {
-        const File = await uploadPhotoCloud(avatar, '/avatars')
+        const File = await uploadAvatarCloud(avatar)
         return File
       } catch (e) {
         console.error(e)

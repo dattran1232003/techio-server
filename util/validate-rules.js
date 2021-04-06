@@ -5,11 +5,11 @@ const createError = (fieldName, message) =>([objOf(fieldName, message)])
 const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-const notEmpty = (field, value, message) =>
-  value.trim() ?  Success(value)
+const notEmpty = (field, value='', message) =>
+  value?.trim() ?  Success(value)
     : /* else */  Failure(createError(field, message))
 
-const matches = (field, regexp, value, message = '') =>
+const matches = (field, regexp, value='', message = '') =>
   regexp.test(value) ?  Success(value)
     : /* otherwise */   Failure(createError(field, message))
 
@@ -19,12 +19,12 @@ const minLength = (field, min, value, message) =>
       `${field} must have ${min} characters.`)
     )
 
-const validURL = (field, url, message) => 
-  url.match(urlRegex) ? Success(url)
+const validURL = (field, url='', message) => 
+  url?.match(urlRegex) ? Success(url)
     : /* otherwise */   Failure(createError(field, message
     || `${url} must match with ${field}`))
 
-const equals = (field, value1, value2, message) =>
+const equals = (field, value1='', value2='', message) =>
   value1 === value2 ? Success(value1)
     : /* otherwise */ Failure(createError(field, message))
 
