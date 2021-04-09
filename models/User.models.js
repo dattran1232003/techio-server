@@ -33,5 +33,4 @@ const userSchema = new Schema({
   likesRecived: Number,
   createdAt: String 
 })
-
 module.exports = model('User', userSchema)

@@ -19,7 +19,10 @@ const generateToken = (user) => {
 module.exports = {
   Mutation: {
     async register(_, { registerInput }) {
-      const inputDataOrErrors = validateRegisterInput(registerInput)
+      const inputDataOrErrors = validateRegisterInput({
+        ...registerInput,
+        avatarURL: process.env.DEFAULT_AVATAR
+      })
       if (!inputDataOrErrors.value) return new UserInputError('Input Errors', {
         errors: inputDataOrErrors
       })
@@ -27,7 +30,7 @@ module.exports = {
         username, 
         email, 
         password, 
-        avatarURL 
+        avatarURL
       } = registerInput
 
       const hashingPassword = bcrypt.hash(password, 12)

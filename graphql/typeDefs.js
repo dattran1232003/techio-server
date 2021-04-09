@@ -65,30 +65,30 @@ module.exports = gql`
     id: ID!
     email: String!
     token: String!
-    avatarURL: String!
     username: String!
+    avatarURL: String!
     createdAt: String!
+    likesRecived: Int!
     likedPost: [Post!]!
     comments: [Comment!]!
-    likesRecived: Int!
   }
 
   type Query {
-    getPosts(offset: Int!, limit: Int): [Post!]!
     getTotal(model: String!): Total!
+    getPosts(offset: Int!, limit: Int): [Post!]!
     getPost(postId: ID, plainTitle: String): Post
   }
   type Mutation {
+    likePost(postId: ID!): Post!
+    deletePost(postId: ID!): String!
     uploadPhoto(photo: Upload!): File!
     uploadAvatar(avatar: Upload!): File!
-    register(registerInput: RegisterInput): User!
-    login(username: String, password: String): User!
-    createPost(title: String, body: String!): Post!
-    editPost(editPostInput: EditPostInput!): Post!
-    deletePost(postId: ID!): String!
-    createComment(postId: ID, plainTitle: ID, body: String!): Post!
     deleteComment(commentId: ID!): String!
-    likePost(postId: ID!): Post!
+    register(registerInput: RegisterInput): User!
+    editPost(editPostInput: EditPostInput!): Post!
+    createPost(title: String, body: String!): Post!
+    login(username: String, password: String): User!
+    createComment(postId: ID, plainTitle: ID, body: String!): Post!
   }
 
   type Subscription {
