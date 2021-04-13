@@ -19,7 +19,6 @@ const validateLoginForm = (data) =>
   Success()
     .concat(isPasswordValid(data.password, data.password))
     .concat(isUsernameValid(data.username))
-    .concat(isAvatarValid(data.avatarURL))
     .map(() => data)
 
 const validateRegisterForm = (data) => 
