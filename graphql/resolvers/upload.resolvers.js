@@ -20,6 +20,7 @@ module.exports = {
       try {
         const File = await uploadAvatarCloud(avatar) 
         User.findOneAndUpdate({ username }, { avatarURL: File.url })
+          .then()
         return File
       } catch(e) {
         console.log(e)
