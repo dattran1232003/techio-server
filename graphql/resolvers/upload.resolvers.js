@@ -1,4 +1,6 @@
-const { uploadPhotoCloud, uploadAvatarCloud } = require('../../util/cloudUpload')
+const { User } = require('@db')
+const checkAuth = require('@util/check-auth')
+const { uploadPhotoCloud, uploadAvatarCloud } = require('@util/cloudUpload')
 
 module.exports = { 
   Query: {
@@ -13,13 +15,15 @@ module.exports = {
         return e
       }
     }, // end of uploadPhoto
-    async uploadAvatar(_, { avatar }) {
+    async uploadAvatar(_, { avatar }, context) {
+      const { username } = checkAuth(context)
       try {
-        const File = await uploadAvatarCloud(avatar)
+        const File = await uploadAvatarCloud(avatar) 
+        User.findOneAndUpdate({ username }, { avatarURL: File.url })
         return File
-      } catch (e) {
-        console.error(e)
-        return e
+      } catch(e) {
+        console.log(e)
+        return new Error('Upload avatar errors')
       }
     }, // end of uploadAvatar
   }

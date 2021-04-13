@@ -66,7 +66,7 @@ module.exports = gql`
     email: String!
     token: String!
     username: String!
-    avatarURL: String!
+    avatarURL: String
     createdAt: String!
     likesRecived: Int!
     likedPost: [Post!]!

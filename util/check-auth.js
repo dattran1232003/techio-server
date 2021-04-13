@@ -3,9 +3,9 @@ const { AuthenticationError } = require('apollo-server')
 
 module.exports = function(context) {
   const authHeader = context.req.headers['authorization']
-  if(authHeader){
+  if(authHeader) {
     const token = authHeader.split('Bearer ')[1]
-    if (token){
+    if (token) {
       try {
         const user = jwt.verify(token, process.env.JWT_SECRET)
         return user

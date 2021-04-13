@@ -1,3 +1,4 @@
+require('module-alias/register')
 const mongoose = require('mongoose')
 const bluebird = require('bluebird')
 const cloudinary = require('cloudinary').v2

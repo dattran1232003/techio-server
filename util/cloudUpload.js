@@ -32,7 +32,7 @@ const uploadAvatarCloud = file =>
   uploadPhotoCloud(file, {
     dir: '/avatars',
     transformation: [
-      { height: 350, width: 350, crop: 'imagga_scale' }
+      { height: 350, width: 350, crop: 'scale' }
     ]
   })
 
