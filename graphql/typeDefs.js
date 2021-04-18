@@ -27,17 +27,17 @@ module.exports = gql`
     id: ID!
     username: ID!
     body: String!
-    shortBody: String!
     title: String!
     likes: [Like!]!
-    comments: [Comment!]!
     likeCount: Int!
-    commentCount: Int!
-    editHistories: [PostHistory!]!
-    plainTitle: String!
-    deletedAt: String
-    createdAt: String!
     draft: Boolean!
+    deletedAt: String
+    shortBody: String!
+    commentCount: Int!
+    createdAt: String!
+    plainTitle: String!
+    comments: [Comment!]!
+    editHistories: [PostHistory!]!
   }
   
   type Like {
@@ -56,11 +56,6 @@ module.exports = gql`
     editedAt: String!
   }
 
-  type Total {
-    model: String!
-    count: Int!
-  }
-
   type User {
     id: ID!
     email: String!
@@ -74,7 +69,7 @@ module.exports = gql`
   }
 
   type Query {
-    getTotal(model: String!): Total!
+    totalPost: Int!
     getPosts(offset: Int!, limit: Int): [Post!]!
     getPost(postId: ID, plainTitle: String): Post
   }

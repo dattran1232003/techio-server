@@ -21,7 +21,7 @@ const findPost = async function findPost(postId, plainTitleURL='') {
 const findPostPublishedOnly = async (postId, plainTitleURL='') => {
   if (!postId?.trim() === '' || !plainTitleURL?.trim() === '')
     throw new Error('must have one of 2 field')
-  const postCanDisplayFilter = { deletedAt: { $eq: null } }
+  const postCanDisplayFilter = { draft: false, deletedAt: null }
   const findPostQuery = plainTitleURL 
     ? Post.findOne({ plainTitle: plainTitleURL }).where(postCanDisplayFilter)
     : Post.findById(postId).where(postCanDisplayFilter) 

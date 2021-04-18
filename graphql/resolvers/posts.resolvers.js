@@ -1,13 +1,9 @@
 const R = require('ramda')
+const { Post } = require('@db')
+const checkAuth = require('@util/check-auth')
 const { UserInputError } = require('apollo-server')
-
-const { Post } = require('../../models')
-
-const checkAuth = require('../../util/check-auth')
-const { now, previewTextMarkdown } = require('../../util/reuseFunctions')
-const { 
-  findPost, formatPost, modTotal
-} = require('../../util/mongooseQuery')
+const { now, previewTextMarkdown } = require('@util/reuseFunctions')
+const { findPost, formatPost, modTotal } = require('@util/mongooseQuery')
 
 const onPublishing = ({ prevDraft=null, currentDraft=null }, cb) => {
   if (prevDraft === true && currentDraft === false) cb()
@@ -19,15 +15,16 @@ module.exports = {
   Query: {
     async getPost(_, { postId, plainTitle }) {
       const post = await findPost(postId, plainTitle) 
+      if (!post) return new Error('Cannot find post')
       return formatPost(post)
     }, // End of getPost function
     async getPosts(_, { offset, limit=10 }) {
-      const posts = await Post.find({ deletedAt: { $eq: null  } })
-        .or([{ draft: false }, { draft: undefined }])
+      const postsFinding = Post.find({ draft: false, deletedAt: null })
         .sort({ createdAt: -1 })
         .skip(offset)
         .limit(limit)
 
+      const posts = await postsFinding
       return posts.map(formatPost)
     }, // End of getPosts function
   },
@@ -51,7 +48,6 @@ module.exports = {
       post.deletedAt = now()
       await post.save()
 
-      changeTotal(-1).then(console.log).catch(console.error)
       return 'Post deleted'
     }, // End of deletePost function
     async likePost(_, { postId }, context) {

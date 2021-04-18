@@ -1,10 +1,12 @@
-const { Count } = require('../../models')
+const { Post } = require('../../models')
 
 module.exports = {
   Query: {
-    async getTotal(_, { model }) {
-      const total = await Count.findOne({ model })
-      return total._doc || new Error('Cannot get total pages')
+    async totalPost() {
+      const publishingPostCount = await Post
+        .countDocuments({ deletedAt: null, draft: false  })
+
+      return publishingPostCount
     }
   }
 }

@@ -55,6 +55,10 @@ postSchema.post('save', async function() {
   await PostModel.updateOne({ _id }, { plainTitle: this.plainTitle })
 })
 
+postSchema.index({ draft: 1 }, {
+  name: 'published_post',
+  partialFilterExpression: { draft: { $eq: false } }
+})
 
 const PostModel = model('Post', postSchema)
 module.exports = PostModel
