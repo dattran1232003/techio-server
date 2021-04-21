@@ -1,5 +1,5 @@
 const { ForbiddenError } = require('apollo-server')
-const { Post, Comment, Count } = require('../models')
+const { User, Post, Comment, Count } = require('../models')
 
 const { previewTextMarkdown } = require('../util/reuseFunctions')
 
@@ -32,11 +32,12 @@ const findPostPublishedOnly = async (postId, plainTitleURL='') => {
 }
 const formatPost = post => ({ 
   ...post._doc, id: post.id,
-  plainTitle: post?.plainTitle?.replace(/ /g, '-') || null,
   body: post._doc.body,
-  shortBody: post._doc.shortBody || previewTextMarkdown.bind(this, post._doc.body),
-  comments: comments.bind(this, post.comments),
   commentCount: post.comments.length,
+  user: findUser.bind(this, post.username),
+  comments: comments.bind(this, post.comments),
+  plainTitle: post?.plainTitle?.replace(/ /g, '-') || null,
+  shortBody: post._doc.shortBody || previewTextMarkdown.bind(this, post._doc.body),
   likeCount: post.likes.length
 })
 
@@ -49,6 +50,7 @@ const debug = returnValue => error => {
   console.error.bind(this, 'Error:', error) 
   return returnValue
 }
+let i = 0
 
 const modTotal = async (model, addition) => {
   const total = await Count.findOne({ model })
@@ -62,6 +64,12 @@ const modTotal = async (model, addition) => {
     })
     return newTotal.save()
   }
+}
+
+const findUser = async username => {
+  console.log('finding user', username, ++i, 'times.')
+  const user = await User.findOne({ username })
+  return user
 }
 
 module.exports = {

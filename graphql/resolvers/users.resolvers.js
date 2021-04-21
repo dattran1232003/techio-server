@@ -1,9 +1,8 @@
+const { User } = require('@db')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { UserInputError } = require('apollo-server')
-
-const { User } = require('../../models')
-const { validateRegisterInput, validateLoginInput } = require('../../util/validator')
+const { validateRegisterInput, validateLoginInput } = require('@util/validator')
 
 const generateToken = (user) => {
   const token = jwt.sign({
@@ -16,7 +15,22 @@ const generateToken = (user) => {
   return token
 }
 
+const formatUser = userData => ({
+  user: {
+    ...userData._doc,
+    id: userData.id,
+    createdAt: new Date(userData._doc.createdAt).toISOString()
+  },
+  token: generateToken(userData),
+})
+
 module.exports = {
+  Query: {
+    async getAvatar(_, { username }) {
+      const user = User.findOne({ username })     
+      return user._doc.avatar || process.env.DEFAULT_AVATAR
+    }, // # getAvatar query
+  },
   Mutation: {
     async register(_, { registerInput }) {
       const inputDataOrErrors = validateRegisterInput({
@@ -50,14 +64,9 @@ module.exports = {
         password: await hashingPassword,
         createdAt: new Date().toISOString()
       })
-      const res = await newUser.save()
+      const responseData = await newUser.save()
 
-      return {
-        ...res._doc,
-        id: res.id,
-        token: generateToken(res),
-        createdAt: new Date(res._doc.createdAt).toISOString()
-      }
+      return formatUser(responseData)
     }, // End of register function
     async login(_, inputLoginData) {
       const inputDataOrErrors = validateLoginInput(inputLoginData)
@@ -78,12 +87,7 @@ module.exports = {
         errors: { password: ['Sai mật khẩu.'] }
       })
       
-      return {
-        ...user._doc,
-        id: user.id,
-        token: generateToken(user._doc),
-        createdAt: new Date(user._doc.createdAt).toISOString()
-      }
+      return formatUser(user)
     }, // End of login function
   }
 }

@@ -25,7 +25,8 @@ module.exports = gql`
 
   type Post {
     id: ID!
-    username: ID!
+    user: User! 
+    username: String!
     body: String!
     title: String!
     likes: [Like!]!
@@ -56,16 +57,20 @@ module.exports = gql`
     editedAt: String!
   }
 
-  type User {
+  type User @cacheControl(maxAge: 240, scope: PUBLIC) {
     id: ID!
     email: String!
-    token: String!
     username: String!
     avatarURL: String
     createdAt: String!
     likesRecived: Int!
     likedPost: [Post!]!
     comments: [Comment!]!
+  }
+
+  type Auth {
+    user: User!
+    token: String!
   }
 
   type Query {
@@ -79,10 +84,10 @@ module.exports = gql`
     uploadPhoto(photo: Upload!): File!
     uploadAvatar(avatar: Upload!): File!
     deleteComment(commentId: ID!): String!
-    register(registerInput: RegisterInput): User!
+    register(registerInput: RegisterInput): Auth!
     editPost(editPostInput: EditPostInput!): Post!
     createPost(title: String, body: String!): Post!
-    login(username: String, password: String): User!
+    login(username: String, password: String): Auth!
     createComment(postId: ID, plainTitle: ID, body: String!): Post!
   }
 
