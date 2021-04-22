@@ -2,13 +2,14 @@ const NodeCache = require('node-cache')
 
 module.exports = class Cache {
   constructor(ttlSeconds) {
+    this.stdTTL = ttlSeconds
     this.cache = new NodeCache({ 
       stdTTL: ttlSeconds, 
       checkperiod: ttlSeconds * 0.2, 
     })
   }
   
-  async get(key, storeFunction) {
+  async get(key, storeFunction, stdTTL) {
     const value = this.cache.get(key)
     if (value) {
       console.log(value.username)
@@ -16,7 +17,7 @@ module.exports = class Cache {
     }
 
     const result = await storeFunction() 
-    this.cache.set(key, result)
+    this.cache.set(key, result, stdTTL || this.stdTTL)
     return result
   }
 
