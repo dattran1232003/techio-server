@@ -1,5 +1,11 @@
+const CacheService = require('@util/cache')
+const NodeCache = require('node-cache')
 const { ForbiddenError } = require('apollo-server')
 const { User, Post, Comment, Count } = require('../models')
+
+// initialize cache service
+const cache = new CacheService(60 * 5) // cache for 5 minutes
+const userCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
 const { previewTextMarkdown } = require('../util/reuseFunctions')
 
@@ -67,8 +73,15 @@ const modTotal = async (model, addition) => {
 }
 
 const findUser = async username => {
-  console.log('finding user', username, ++i, 'times.')
-  const user = await User.findOne({ username })
+  //const user = await cache.get(username, () => { 
+  //  console.log('finding user', username, ++i, 'times.')
+  //  return User.findOne({ username }) 
+  //})
+  const userInCache = userCache.get(username)
+  console.log(userInCache)
+  const user = userInCache || await User.findOne({ username })
+  if (!userInCache) userCache.set(username, user._doc)
+
   return user
 }
 

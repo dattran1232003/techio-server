@@ -24,6 +24,7 @@
     "jwt-decode": "^3.1.2",
     "module-alias": "^2.2.2",
     "mongoose": "^5.11.15",
+    "node-cache": "^5.1.2",
     "ramda": "^0.27.1",
     "remark": "^13.0.0",
     "strip-markdown": "^4.0.0",
