@@ -54,7 +54,6 @@ const debug = returnValue => error => {
   console.error.bind(this, 'Error:', error) 
   return returnValue
 }
-let i = 0
 
 const modTotal = async (model, addition) => {
   const total = await Count.findOne({ model })
@@ -71,11 +70,7 @@ const modTotal = async (model, addition) => {
 }
 
 const findUser = async username => {
-  const user = await cache.get(username, () => { 
-    console.log('finding user', username, ++i, 'times.')
-    return User.findOne({ username }) 
-  })
-
+  const user = await cache.get(username, () => User.findOne({ username }))
   return user
 }
 

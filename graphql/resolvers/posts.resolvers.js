@@ -37,9 +37,9 @@ module.exports = {
         shortBody: await previewTextMarkdown(body),
         createdAt: now()
       })
+      newPost.plainTitle = title || newPost.id
       const post = await newPost.save()
 
-      if (!post._doc.draft) changeTotal(1).then(console.log).catch(console.error)
       return formatPost(post)
     }, // End of createPost function
     async deletePost(_, { postId }, context) {
@@ -107,9 +107,7 @@ module.exports = {
       onPublishing(
         { prevDraft: oldPost.draft, currentDraft: draft }, 
         () => { 
-          changeTotal(1).then(console.log).catch(console.error)
           pubsub.publish('PUBLISH_POST', { publishPost: { ...savedPost } })
-
         }      
       )
       return savedPost

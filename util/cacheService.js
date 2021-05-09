@@ -12,7 +12,6 @@ module.exports = class Cache {
   async get(key, storeFunction, stdTTL) {
     const value = this.cache.get(key)
     if (value) {
-      console.log(value.username)
       return Promise.resolve(value)
     }
 

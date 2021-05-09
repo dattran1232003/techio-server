@@ -75,9 +75,11 @@ module.exports = gql`
 
   type Query {
     totalPost: Int!
+    getUserInfo(username: ID!): User
     getPosts(offset: Int!, limit: Int): [Post!]!
     getPost(postId: ID, plainTitle: String): Post
   }
+
   type Mutation {
     likePost(postId: ID!): Post!
     deletePost(postId: ID!): String!

@@ -1,6 +1,7 @@
 const { User } = require('@db')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { userQuery } = require('@queries')
 const { UserInputError } = require('apollo-server')
 const { validateRegisterInput, validateLoginInput } = require('@util/validator')
 
@@ -26,10 +27,6 @@ const formatUser = userData => ({
 
 module.exports = {
   Query: {
-    async getAvatar(_, { username }) {
-      const user = User.findOne({ username })     
-      return user._doc.avatar || process.env.DEFAULT_AVATAR
-    }, // # getAvatar query
   },
   Mutation: {
     async register(_, { registerInput }) {
@@ -47,9 +44,12 @@ module.exports = {
         avatarURL
       } = registerInput
 
+      // execute asynchronous tasks concurrently
+      const findUser = User.findOne({ username })
       const hashingPassword = bcrypt.hash(password, 12)
+
       // Make sure user doesn't already exists
-      if (await User.findOne({username})) 
+      if (await findUser) 
         return new UserInputError('Username is taken.', {
           errors: {
             username: ['This username already taken']

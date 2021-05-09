@@ -6,15 +6,16 @@ const commentsResolver = require('./comments.resolvers')
 
 module.exports = {
   Query: {
-    ...uploadResolvers.Query, 
+    ...totalResolvers.Query,
     ...postsResolvers.Query,
-    ...totalResolvers.Query
+    ...usersResolvers.Query,
+    ...uploadResolvers.Query, 
   },
   Mutation: {
-    ...uploadResolvers.Mutation, 
     ...postsResolvers.Mutation,
     ...usersResolvers.Mutation,
-    ...commentsResolver.Mutation
+    ...uploadResolvers.Mutation, 
+    ...commentsResolver.Mutation,
   },
   Subscription: {
     ...postsResolvers.Subscription
