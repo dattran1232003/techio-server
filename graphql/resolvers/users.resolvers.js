@@ -2,6 +2,7 @@ const { User } = require('@db')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { userQuery } = require('@queries')
+const checkAuth = require('@util/check-auth')
 const { UserInputError } = require('apollo-server')
 const { validateRegisterInput, validateLoginInput } = require('@util/validator')
 
@@ -29,6 +30,11 @@ module.exports = {
   Query: {
   },
   Mutation: {
+    async follow(_, thatPerson, context) {
+      const me = checkAuth(context)
+      const isFollowSuccess = await userQuery.follow(thatPerson, me)
+      return isFollowSuccess
+    },
     async register(_, { registerInput }) {
       const inputDataOrErrors = validateRegisterInput({
         ...registerInput,
@@ -38,8 +44,8 @@ module.exports = {
         errors: inputDataOrErrors
       })
       const { 
-        username, 
         email, 
+        username, 
         password, 
         avatarURL
       } = registerInput

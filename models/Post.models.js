@@ -1,15 +1,12 @@
 const mongoose = require('mongoose')
 
 const { Schema, model } = mongoose
+
 const postSchema = new Schema({
   body: { type: String, required: true, trim: true },
   shortBody: { type: String, trim: true },
   title: {type: String, default: '', trim: true },
-  username: {
-    type: String,
-    trim: true,
-    required: true
-  },
+  username: { type: String, trim: true, unique: true, required: true },
   draft: { type: Boolean, default: true },
   plainTitle: { trim: true, type: String, default: '' },
   likes: [{ username: String }],
@@ -27,8 +24,9 @@ const postSchema = new Schema({
     type: String,
     default: null
   },
-  createdAt: String
+  createdAt: String,
 })
+
 const { normalizeString } = require('../util/reuseFunctions')
 
 postSchema.post('save', async function() {

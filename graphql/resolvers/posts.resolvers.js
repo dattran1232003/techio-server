@@ -2,14 +2,12 @@ const R = require('ramda')
 const { Post } = require('@db')
 const checkAuth = require('@util/check-auth')
 const { UserInputError } = require('apollo-server')
+const { findPost, formatPost } = require('@util/mongooseQuery')
 const { now, previewTextMarkdown } = require('@util/reuseFunctions')
-const { findPost, formatPost, modTotal } = require('@util/mongooseQuery')
 
 const onPublishing = ({ prevDraft=null, currentDraft=null }, cb) => {
   if (prevDraft === true && currentDraft === false) cb()
 }
-
-const changeTotal = modTotal.bind(null, 'Post')
 
 module.exports = {
   Query: {

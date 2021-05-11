@@ -82,6 +82,7 @@ module.exports = gql`
 
   type Mutation {
     likePost(postId: ID!): Post!
+    follow(username: ID!): Boolean!
     deletePost(postId: ID!): String!
     uploadPhoto(photo: Upload!): File!
     uploadAvatar(avatar: Upload!): File!

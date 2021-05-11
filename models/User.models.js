@@ -28,6 +28,8 @@ const userSchema = new Schema({
   likedPost: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   likesRecived: Number,
-  createdAt: String 
+  createdAt: String,
+  followers: [{ type: String }],
+  following: [{ type: String }]
 })
 module.exports = model('User', userSchema)

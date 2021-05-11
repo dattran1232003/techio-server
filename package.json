@@ -12,6 +12,7 @@
   "main": "server.js",
   "license": "MIT",
   "dependencies": {
+    "@dattr/react-responsive": "^1.2.5",
     "apollo-server": "^2.19.2",
     "bcrypt": "^5.0.0",
     "bluebird": "^3.7.2",
