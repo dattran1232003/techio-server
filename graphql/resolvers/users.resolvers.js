@@ -28,12 +28,17 @@ const formatUser = userData => ({
 
 module.exports = {
   Query: {
+    async isFollowing(_, thatPerson, context) {
+      const me = checkAuth(context)
+      const isFollowing = await userQuery.isFollowing(thatPerson, me)
+      return isFollowing
+    }
   },
   Mutation: {
     async follow(_, thatPerson, context) {
       const me = checkAuth(context)
-      const isFollowSuccess = await userQuery.follow(thatPerson, me)
-      return isFollowSuccess
+      const isFollowing= await userQuery.toggleFollow(thatPerson, me)
+      return isFollowing
     },
     async register(_, { registerInput }) {
       const inputDataOrErrors = validateRegisterInput({

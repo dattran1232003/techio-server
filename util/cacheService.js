@@ -11,13 +11,18 @@ module.exports = class Cache {
   
   async get(key, storeFunction, stdTTL) {
     const value = this.cache.get(key)
-    if (value) {
-      return Promise.resolve(value)
+    if (value !== null) {
+      return value
     }
 
     const result = await storeFunction() 
     this.cache.set(key, result, stdTTL || this.stdTTL)
+
     return result
+  }
+
+  async set(...args) {
+    return this.cache.set(...args)
   }
 
   del(keys) {

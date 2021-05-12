@@ -1,15 +1,40 @@
 const R = require('ramda')
 const { User } = require('../index')
+const Cache = require('@util/cacheService')
 
-const follow = async (thatPerson, me) => {
+const userCache = new Cache(60 * 60) // cache for 1 hour
+
+const followCacheKey = (follower, onPerson) => `${follower} following ${onPerson}`
+const findUser = username => User.findOne({ username })
+const findMultiUsers = (...usernames) => {
+  const findingUsers = usernames.map(findUser)
+  return Promise.all(findingUsers)
+}
+
+const isFollowing = async(thatPerson, me) => {
+  // follow my self
+  if (thatPerson.username === me.username) 
+    return new Error('Cannot follow you\'re self')
+  
+  // find in caching, if not in caching, store it to Caching
+  const isFollowing = await userCache.get(followCacheKey(me.username, thatPerson.username), 
+    async function store() {
+    const meInDB =  await findUser(me.username)
+    if (!meInDB) return new Error(`Your account ${me.username} not found.`)
+
+    return R.includes(thatPerson.username, meInDB.following || [])
+  })
+
+  return isFollowing
+}
+
+const toggleFollow = async (thatPerson, me) => {
   // follow my self
   if (thatPerson.username === me.username) 
     return new Error('Cannot follow you\'re self')
 
-  const findMe          = User.findOne({ username: me.username })
-  const findThatPerson  = User.findOne({ username: thatPerson.username })
+  const [meInDB, thatPersonInDB] = await findMultiUsers(me.username, thatPerson.username)
 
-  const [meInDB, thatPersonInDB] = await Promise.all([findMe, findThatPerson])
   if (!meInDB) return new Error(`Your account ${me.username} not found.`)
   if (!thatPersonInDB) return new Error(`${thatPerson.username} not found.`)
 
@@ -29,6 +54,9 @@ const follow = async (thatPerson, me) => {
   try {
     // resave both person
     await Promise.all([meInDB.save(), thatPersonInDB.save()])
+    // set to cache
+    await userCache.set(followCacheKey(meInDB.username, thatPerson.username), !isFollowed)
+    // return for client
     return !isFollowed
   } catch (e) {
     console.log(e)
@@ -37,5 +65,6 @@ const follow = async (thatPerson, me) => {
 }
 
 module.exports = {
-  follow
+  isFollowing,
+  toggleFollow
 }

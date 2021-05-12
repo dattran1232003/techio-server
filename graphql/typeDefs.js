@@ -37,6 +37,8 @@ module.exports = gql`
     commentCount: Int!
     createdAt: String!
     plainTitle: String!
+    follower: [String]!
+    following: [String]!
     comments: [Comment!]!
     editHistories: [PostHistory!]!
   }
@@ -76,6 +78,7 @@ module.exports = gql`
   type Query {
     totalPost: Int!
     getUserInfo(username: ID!): User
+    isFollowing(username: ID!): Boolean!
     getPosts(offset: Int!, limit: Int): [Post!]!
     getPost(postId: ID, plainTitle: String): Post
   }
