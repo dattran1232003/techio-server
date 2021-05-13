@@ -11,51 +11,53 @@ const findMultiUsers = (...usernames) => {
   return Promise.all(findingUsers)
 }
 
-const isFollowing = async(thatPerson, me) => {
+const isFollowing = async(person, me) => {
   // follow my self
-  if (thatPerson.username === me.username) 
+  if (person.username === me.username) 
     return new Error('Cannot follow you\'re self')
   
   // find in caching, if not in caching, store it to Caching
-  const isFollowing = await userCache.get(followCacheKey(me.username, thatPerson.username), 
+  const isFollowing = await userCache.get(followCacheKey(me.username, person.username), 
     async function store() {
     const meInDB =  await findUser(me.username)
     if (!meInDB) return new Error(`Your account ${me.username} not found.`)
 
-    return R.includes(thatPerson.username, meInDB.following || [])
+    return R.includes(person.username, meInDB.following || [])
   })
 
   return isFollowing
 }
 
-const toggleFollow = async (thatPerson, me) => {
+const toggleFollow = async (person, me) => {
   // follow my self
-  if (thatPerson.username === me.username) 
-    return new Error('Cannot follow you\'re self')
+  if (person.username === me.username) 
+    return new Error('Cannot follow your self.')
 
-  const [meInDB, thatPersonInDB] = await findMultiUsers(me.username, thatPerson.username)
+  const [meInDB, personInDB] = await findMultiUsers(me.username, person.username)
 
   if (!meInDB) return new Error(`Your account ${me.username} not found.`)
-  if (!thatPersonInDB) return new Error(`${thatPerson.username} not found.`)
+  if (!personInDB) return new Error(`${person.username} not found.`)
 
   const isFollowed = 
     // if i followed on that person
-    R.includes(thatPerson.username, meInDB.following || []) ||
-    // or list Follower of that person including me
-    R.includes(meInDB.username, thatPerson.follower || [])
+    R.includes(person.username, meInDB.following || []) ||
+    // or list Followers of that person including me
+    R.includes(meInDB.username, person.followers || [])
 
   const toggleFollow = username => isFollowed 
     ? R.pipe(R.filter(u => u !== username)) // if followed, remove 
     : R.pipe(R.append(username), R.dropRepeats) // if not yet, follow
 
-  meInDB.following        = toggleFollow(thatPerson.username)(meInDB.following  || [])
-  thatPersonInDB.follower = toggleFollow(me.username)(thatPersonInDB.follower   || [])
+  meInDB.following        = toggleFollow(person.username)(meInDB.following  || [])
+  personInDB.followers    = toggleFollow(me.username)(personInDB.followers  || [])
+  console.log(person.username, meInDB.following)
+  console.log(me.username, personInDB.followers)
 
   try {
     // resave both person
-    await Promise.all([meInDB.save(), thatPersonInDB.save()])
+    await Promise.all([meInDB.save(), personInDB.save()])
     // store isFollowed to cache
-    await userCache.set(followCacheKey(meInDB.username, thatPerson.username), !isFollowed)
+    await userCache.set(followCacheKey(meInDB.username, person.username), !isFollowed)
     // return for client
     return !isFollowed
   } catch (e) {
