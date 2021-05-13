@@ -35,7 +35,7 @@ module.exports = {
     }
   },
   Mutation: {
-    async follow(_, thatPerson, context) {
+    async toggleFollow(_, thatPerson, context) {
       const me = checkAuth(context)
       const isFollowing= await userQuery.toggleFollow(thatPerson, me)
       return isFollowing

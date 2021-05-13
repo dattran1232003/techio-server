@@ -38,7 +38,7 @@ const formatPost = post => ({
   ...post._doc, id: post.id,
   body: post._doc.body,
   commentCount: post.comments.length,
-  user: findUser.bind(this, post.username),
+  user: findUser.bind(this, post._doc.username),
   comments: comments.bind(this, post.comments),
   plainTitle: post?.plainTitle?.replace(/ /g, '-') || null,
   shortBody: post._doc.shortBody || previewTextMarkdown.bind(this, post._doc.body),
@@ -70,7 +70,7 @@ const modTotal = async (model, addition) => {
 }
 
 const findUser = async username => {
-  const user = await cache.get(username, () => User.findOne({ username }))
+  const user = await cache.get(username, async () => User.findOne({ username }))
   return user
 }
 

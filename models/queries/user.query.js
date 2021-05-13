@@ -54,7 +54,7 @@ const toggleFollow = async (thatPerson, me) => {
   try {
     // resave both person
     await Promise.all([meInDB.save(), thatPersonInDB.save()])
-    // set to cache
+    // store isFollowed to cache
     await userCache.set(followCacheKey(meInDB.username, thatPerson.username), !isFollowed)
     // return for client
     return !isFollowed
