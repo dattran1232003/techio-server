@@ -37,8 +37,6 @@ module.exports = gql`
     commentCount: Int!
     createdAt: String!
     plainTitle: String!
-    follower: [String]!
-    following: [String]!
     comments: [Comment!]!
     editHistories: [PostHistory!]!
   }
@@ -59,15 +57,28 @@ module.exports = gql`
     editedAt: String!
   }
 
+  type UserAvatar {
+    username: ID!
+    avatarURL: String
+  }
+
   type User @cacheControl(maxAge: 240, scope: PUBLIC) {
     id: ID!
+    # Basic information
     email: String!
     username: String!
     avatarURL: String
     createdAt: String!
+
+    # Populars
     likesRecived: Int!
     likedPost: [Post!]!
     comments: [Comment!]!
+    followers: [UserAvatar]!
+    following: [UserAvatar]!
+
+    followersCount: Int!
+    followingCount: Int!
   }
 
   type Auth {
@@ -76,25 +87,35 @@ module.exports = gql`
   }
 
   type Query {
+    # Post
     totalPost: Int!
-    getUserInfo(username: ID!): User
-    isFollowing(username: ID!): Boolean!
     getPosts(offset: Int!, limit: Int): [Post!]!
     getPost(postId: ID, plainTitle: String): Post
+
+    # User
+    getUserInfo(username: ID!): User
+    isFollowing(username: ID!): Boolean!
+    userAvatars(usernames: [String!]!): [UserAvatar]!
   }
 
   type Mutation {
+    # Post
     likePost(postId: ID!): Post!
     deletePost(postId: ID!): String!
-    uploadPhoto(photo: Upload!): File!
-    uploadAvatar(avatar: Upload!): File!
-    toggleFollow(username: ID!): Boolean!
     deleteComment(commentId: ID!): String!
-    register(registerInput: RegisterInput): Auth!
     editPost(editPostInput: EditPostInput!): Post!
     createPost(title: String, body: String!): Post!
-    login(username: String, password: String): Auth!
     createComment(postId: ID, plainTitle: ID, body: String!): Post!
+
+    # Upload
+    uploadPhoto(photo: Upload!): File!
+    uploadAvatar(avatar: Upload!): File!
+
+    # User
+    toggleFollow(username: ID!): Boolean!
+    register(registerInput: RegisterInput): Auth!
+    login(username: String, password: String): Auth!
+
   }
 
   type Subscription {

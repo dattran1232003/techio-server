@@ -17,10 +17,16 @@ const generateToken = (user) => {
   return token
 }
 
+const countFollowers = username => userQuery.countUserField(username, { fieldName: 'followers' })
+const countFollowing = username => userQuery.countUserField(username, { fieldName: 'following' })
 const formatUser = userData => ({
   user: {
     ...userData._doc,
     id: userData.id,
+    followers: userQuery.getAvatars .bind(null, userData._doc.followers),
+    following: userQuery.getAvatars .bind(null, userData._doc.following),
+    followersCount: countFollowers  .bind(null, userData.username),
+    followingCount: countFollowing  .bind(null, userData.username),
     createdAt: new Date(userData._doc.createdAt).toISOString()
   },
   token: generateToken(userData),
@@ -28,10 +34,17 @@ const formatUser = userData => ({
 
 module.exports = {
   Query: {
+    async userAvatars(_, { usernames }) {
+      return await userQuery.getAvatars(usernames)
+    },
     async isFollowing(_, thatPerson, context) {
       const me = checkAuth(context)
       const isFollowing = await userQuery.isFollowing(thatPerson, me)
       return isFollowing
+    },
+    async getUserInfo(_, user) {
+      const userInfo = await User.findOne(user)
+      return formatUser(userInfo).user
     }
   },
   Mutation: {

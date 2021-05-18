@@ -2,6 +2,8 @@ const R = require('ramda')
 const { User } = require('../index')
 const Cache = require('@util/cacheService')
 
+const debug = console.log.bind(console, 'debug:')
+
 const userCache = new Cache(60 * 60) // cache for 1 hour
 
 const followCacheKey = (follower, onPerson) => `${follower} following ${onPerson}`
@@ -14,7 +16,7 @@ const findMultiUsers = (...usernames) => {
 const isFollowing = async(person, me) => {
   // follow my self
   if (person.username === me.username) 
-    return new Error('Cannot follow you\'re self')
+    return new Error('Cannot follow your self.')
   
   // find in caching, if not in caching, store it to Caching
   const isFollowing = await userCache.get(followCacheKey(me.username, person.username), 
@@ -50,8 +52,6 @@ const toggleFollow = async (person, me) => {
 
   meInDB.following        = toggleFollow(person.username)(meInDB.following  || [])
   personInDB.followers    = toggleFollow(me.username)(personInDB.followers  || [])
-  console.log(person.username, meInDB.following)
-  console.log(me.username, personInDB.followers)
 
   try {
     // resave both person
@@ -66,7 +66,41 @@ const toggleFollow = async (person, me) => {
   }
 }
 
+const getAvatars = async (usernames) => {
+  try {
+    const avatars = await User.find(
+      { username: { $in: usernames } }, 
+      { username: 1, avatarURL: 1, _id: 0 } // select fields
+    )
+
+    return avatars
+  } catch(e) {
+    console.error(e)
+    return []
+  }
+}
+
+const countUserField = async (username, { fieldName=null }) => {
+  if (R.isNil(fieldName)) return 0
+
+  try {
+    const fieldCount = (
+      await User.aggregate([
+        { $match: { username } },
+        { $project: { [fieldName]: { $size: `$${fieldName}` } } }
+      ])
+    )[0]
+
+    return fieldCount[fieldName] || 0
+  } catch(e) {
+    console.log(new Date.now(), e)
+    return 0
+  }
+}
+
 module.exports = {
+  getAvatars,
   isFollowing,
-  toggleFollow
+  toggleFollow,
+  countUserField,
 }

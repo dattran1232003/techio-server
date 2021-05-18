@@ -1,0 +1,11 @@
+/* dependencies */
+node_modules
+
+/* OS */
+.DS_Store
+
+/* client */
+client/
+
+/* git directory */
+.git
